@@ -37,18 +37,20 @@ for file in raw/*.fq.gz; do
         fastqc -o viral_fastqc1 "$file"
     fi
 done
- 
-sample_list=("hg12c3" "hg12c4" "hg12c5" "hg12v2" "hg12v4" "hg12v5" "hg24c2" "hg24c4" "hg24c5" "hg24v1" "hg24v4" "hg24v6" "tr12c1" "tr12c4" "tr12c5" "tr12v2" "tr12v4" "tr24v4" "tr24v7")
+
+# run trimmomatic 
+sample_list=("LaSota" "hg12c3" "hg12c4" "hg12c5" "hg12v2" "hg12v4" "hg12v5" "hg24c2" "hg24c4" "hg24c5" "hg24v1" "hg24v4" "hg24v6" "tr12c1" "tr12c4" "tr12c5" "tr12v2" "tr12v4" "tr24v4" "tr24v7")
 
 mkdir viral_trimmomatic
 
 for sample in "${sample_list[@]}"; do
-	echo "CURRENT FILE:$sample"
-        java -jar /mnt/beegfs/apps/dmc/apps/spack_0.16.0/spack/opt/spack/linux-centos7-ivybridge/gcc-10.2.0/trimmomatic-0.39-ili2pw5eux5c4zkvobobylopjwwu7phd/bin/trimmomatic-0.39.jar PE -phred33 viral_trimmomatic/${sample}_1.fq.gz viral_trimmomatic/${sample}_2.fq.gz viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz ILLUMINACLIP:TrueSeq3-PE.fa:2:30:10:2:True LEADING:3 TRAILING:3 MINLEN:36
+	echo "CURRENT FILE: $sample"
+        java -jar /mnt/beegfs/apps/dmc/apps/spack_0.16.0/spack/opt/spack/linux-centos7-ivybridge/gcc-10.2.0/trimmomatic-0.39-ili2pw5eux5c4zkvobobylopjwwu7phd/bin/trimmomatic-0.39.jar PE -phred33 raw/${sample}_1.fq.gz raw/${sample}_2.fq.gz viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz ILLUMINACLIP:TrueSeq3-PE.fa:2:30:10:2:True LEADING:3 TRAILING:3 MINLEN:36
 done
 
 cd ..
 
+# run fastqc on the trimmed sequences
 mkdir viral_fastqc2
 
 for file in viral_trimmomatic/*.fq.gz; do
@@ -59,19 +61,28 @@ for file in viral_trimmomatic/*.fq.gz; do
     fi
 done
 
+# align trimmed paired sequences against ref_genome AF077761.1, ASM478661.1, ASM283408.1  4 threads
+# in case there are a lot of unpaired sequences, do the same for those
+mkdir viral_PE_alignedAF
+mkdir viral_PE_alignedASM47
+mkdir viral_PE_alignedASM28
 
-
-#bwa mem aligns #and samtools sorts
-
-for i in tr12v2 tr12v4 tr24v4 tr24v7 #hg12c3hg12c4hg12c5hg12v2hg12v4hg12v5hg24c2hg24c4hg24c5hg24v1hg24v4hg24v6tr12c1tr12c4tr12c5# 
-          
-do
-        bwa mem -t 8 ndv-index output_forward_paired_${i}.fq.gz output_reverse_paired_${i}.fq.gz | samtools sort -o ${i}_output.sorted.bam
-
-        mkdir ${i}
-        mv ${i}_output.sorted.bam /${i}
+for sample in "${sample_list[@]}"; do
+	echo "CURRENT FILE: $sample"
+        bwa mem -t 4 ref_index/AF077761.1 viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz | samtools sort -o viral_PE_alignedAF/${sample}_PE.sorted.bam
+	bwa mem -t 4 ref_index/ASM478661.1 viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz | samtools sort -o viral_PE_alignedASM47/${sample}_PE.sorted.bam
+        bwa mem -t 4 ref_index/ASM283408.1 viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz | samtools sort -o viral_PE_alignedASM28/${sample}_PE.sorted.bam
 done
 
+mkdir viral_SE_alignedAF
+mkdir viral_SE_alignedASM47
+mkdir viral_SE_alignedASM28
+for sample in "${sample_list[@]}"; do
+	echo "CURRENT FILE: $sample"
+        bwa mem -t 4 ref_index/AF077761.1 viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz | samtools sort -o viral_SE_alignedAF/${sample}_SE.sorted.bam
+	bwa mem -t 4 ref_index/ASM478661.1 viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz | samtools sort -o viral_SE_alignedASM47/${sample}_SE.sorted.bam
+        bwa mem -t 4 ref_index/ASM283408.1 viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz | samtools sort -o viral_SE_alignedASM28/${sample}_SE.sorted.bam
+done
 
 
 ################### Chunk 4 ################
