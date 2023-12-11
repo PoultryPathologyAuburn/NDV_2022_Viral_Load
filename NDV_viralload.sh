@@ -1,62 +1,66 @@
-################################################
-################## CHUNKY 1 ####################
-###### CREATE REF GEN INDEXES ######
-################################################
-
-
 #!/bin/bash
-#
+
+# indexing references 
+# fastqc
+# trimmomatic
+
 #load module
-module load gcc/6.2.0 bwa/0.7.12
+source /apps/profiles/modules_dmc.sh.dyn
+# module load gcc/6.2.0 bwa/0.7.12
 module load samtools/1.13
-module load picard/1.79
+# module load picard/1.79
+module load gatk/4.4.0.0
 
-bwa index GCF_004786615.1_ASM478661v1_genomic.fasta 
-samtools faidx GCF_004786615.1_ASM478661v1_genomic.fasta
-java -Xms2g -Xmx4g -jar /opt/asn/apps/picard_1.79/picard-tools-1.79/CreateSequenceDictionary.jar REFERENCE=GCF_004786615.1_ASM478661v1_genomic.fasta OUTPUT=GCF_004786615.1_ASM478661v1_genomic.dict
-genome_size=`awk '{sum+=$2} END {print sum}' GCF_004786615.1_ASM478661v1_genomic.fasta.fai`
+mkdir ref_index
+cd ref_index
 
+ref_list=("ASM478661.1" "AF077761.1" "ASM283408.1")
 
-################################################
-################## CHUNKY 2 ####################
-###### TRIM POOR SEQUENCES W TRIMMOMATICS ######
-################################################
-
-#!/bin/bash
-
-#source /opt/asn/etc/asn-bash-profiles-special/modules.sh
-
-#module load trimmomatic
-	
-for i in hg12c3 hg12c4 hg12c5 hg12v2 hg12v4 hg12v5 hg24c2 hg24c4 hg24c5 hg24v1 hg24v4 hg24v6 tr12c1 tr12c4 tr12c5 tr12v2 tr12v4 tr24v4 tr24v7
-do 
-	cd ${i}
-	java -jar /mnt/beegfs/apps/dmc/apps/spack_0.16.0/spack/opt/spack/linux-centos7-ivybridge/gcc-10.2.0/trimmomatic-0.39-ili2pw5eux5c4zkvobobylopjwwu7phd/bin/trimmomatic-0.39.jar PE -phred33 ${i}_1.fq.gz ${i}_2.fq.gz output_forward_paired_${i}.fq.gz output_forward_unpaired_${i}.fq.gz output_reverse_paired_${i}.fq.gz output_reverse_unpaired_${i}.fq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:True LEADING:3 TRAILING:3 MINLEN:36
-	cd ..
+for ref in "${ref_list[@]}"; do
+	bwa index ../ncbi-references/${ref}.fasta 
+	samtools faidx ../ncbi-references/${ref}.fasta
+ 	gatk --java-options "-Xmx1G" CreateSequenceDictionary -R ../ncbi-references/${ref}.fasta
+	#java -Xms2g -Xmx4g -jar /opt/asn/apps/picard_1.79/picard-tools-1.79/CreateSequenceDictionary.jar REFERENCE=GCF_004786615.1_ASM478661v1_genomic.fasta OUTPUT=GCF_004786615.1_ASM478661v1_genomic.dict
+	genome_size=`awk '{sum+=$2} END {print sum}' ref_index/${ref}.fasta.fai`
+ 	echo $genome_size >> genome_size.txt
 done
 
-for i in hg12c3 hg12c4 hg12c5 hg12v2 hg12v4 hg12v5 hg24c2 hg24c4 hg24c5 hg24v1 hg24v4 hg24v6 tr12c1 tr12c4 tr12c5 tr12v2 tr12v4 tr24v4 tr24v7
-do
-	cd ${i}
-	mv output_reverse_paired_${i}.fq.gz ..
-	mv output_forward_paired_${i}.fq.gz ..
-	cd ..
+cd ..
+
+# run FastQC on the raw sequences:
+mkdir viral_fastqc1
+
+for file in raw/*.fq.gz; do
+    # Check if the file exists
+    if [ -e "$file" ]; then
+        # Perform FastQC on the file and save in directory viral_fastqc1
+        fastqc -o viral_fastqc1 "$file"
+    fi
+done
+ 
+sample_list=("hg12c3" "hg12c4" "hg12c5" "hg12v2" "hg12v4" "hg12v5" "hg24c2" "hg24c4" "hg24c5" "hg24v1" "hg24v4" "hg24v6" "tr12c1" "tr12c4" "tr12c5" "tr12v2" "tr12v4" "tr24v4" "tr24v7")
+
+mkdir viral_trimmomatic
+
+for sample in "${sample_list[@]}"; do
+	echo "CURRENT FILE:$sample"
+        java -jar /mnt/beegfs/apps/dmc/apps/spack_0.16.0/spack/opt/spack/linux-centos7-ivybridge/gcc-10.2.0/trimmomatic-0.39-ili2pw5eux5c4zkvobobylopjwwu7phd/bin/trimmomatic-0.39.jar PE -phred33 viral_trimmomatic/${sample}_1.fq.gz viral_trimmomatic/${sample}_2.fq.gz viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz ILLUMINACLIP:TrueSeq3-PE.fa:2:30:10:2:True LEADING:3 TRAILING:3 MINLEN:36
 done
 
-###############################################
-################## CHUNKY 3 ###################
-#### BWA ALIGNMENT AGAINST NDV REF GENOME #####
-###############################################
+cd ..
 
-#!/bin/bash
+mkdir viral_fastqc2
 
-#load the module
-source /opt/asn/etc/asn-bash-profiles-special/modules.sh
-module load anaconda/3-2019.10
-module load bwa/0.7.12
-module load samtools/1.13
-#
-#
+for file in viral_trimmomatic/*.fq.gz; do
+    # Check if the file exists
+    if [ -e "$file" ]; then
+        # Perform FastQC on the file and save in directory viral_fastqc2
+        fastqc -o viral_fastqc2 "$file"
+    fi
+done
+
+
+
 #bwa mem aligns #and samtools sorts
 
 for i in tr12v2 tr12v4 tr24v4 tr24v7 #hg12c3hg12c4hg12c5hg12v2hg12v4hg12v5hg24c2hg24c4hg24c5hg24v1hg24v4hg24v6tr12c1tr12c4tr12c5# 
