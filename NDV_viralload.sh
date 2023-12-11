@@ -5,24 +5,24 @@
 # trimmomatic
 
 #load module
-source /apps/profiles/modules_dmc.sh.dyn
+source /apps/profiles/modules_asax.sh.dyn
 # module load gcc/6.2.0 bwa/0.7.12
-module load samtools/1.13
+module load samtools/1.18
 # module load picard/1.79
 module load gatk/4.4.0.0
-module load bwa/0.7.12
+module load bwa/0.7.17
+module load fastqc/0.10.1
 
-mkdir ref_index
-cd ref_index
+cd ncbi-references
 
 ref_list=("ASM478661.1" "AF077761.1" "ASM283408.1")
 
 for ref in "${ref_list[@]}"; do
-	bwa index ../ncbi-references/${ref}.fasta 
-	samtools faidx ../ncbi-references/${ref}.fasta
- 	gatk --java-options "-Xmx1G" CreateSequenceDictionary -R ../ncbi-references/${ref}.fasta
+	bwa index ${ref}.fasta 
+	samtools faidx ${ref}.fasta
+ 	gatk --java-options "-Xmx1G" CreateSequenceDictionary -R ${ref}.fasta
 	#java -Xms2g -Xmx4g -jar /opt/asn/apps/picard_1.79/picard-tools-1.79/CreateSequenceDictionary.jar REFERENCE=GCF_004786615.1_ASM478661v1_genomic.fasta OUTPUT=GCF_004786615.1_ASM478661v1_genomic.dict
-	genome_size=`awk '{sum+=$2} END {print sum}' ref_index/${ref}.fasta.fai`
+	genome_size=`awk '{sum+=$2} END {print sum}' ${ref}.fasta.fai`
  	echo $genome_size >> genome_size.txt
 done
 
@@ -46,7 +46,8 @@ mkdir viral_trimmomatic
 
 for sample in "${sample_list[@]}"; do
 	echo "CURRENT FILE: $sample"
-        java -jar /mnt/beegfs/apps/dmc/apps/spack_0.16.0/spack/opt/spack/linux-centos7-ivybridge/gcc-10.2.0/trimmomatic-0.39-ili2pw5eux5c4zkvobobylopjwwu7phd/bin/trimmomatic-0.39.jar PE -phred33 raw/${sample}_1.fq.gz raw/${sample}_2.fq.gz viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz ILLUMINACLIP:TrueSeq3-PE.fa:2:30:10:2:True LEADING:3 TRAILING:3 MINLEN:36
+ 	trimmomatic ARGS PE -phred33 raw/${sample}_1.fq.gz raw/${sample}_2.fq.gz viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz ILLUMINACLIP:raw/TruSeq3-PE.fa:2:30:10:2:True LEADING:3 TRAILING:3 MINLEN:36
+        #java -jar /mnt/beegfs/apps/dmc/apps/spack_0.16.0/spack/opt/spack/linux-centos7-ivybridge/gcc-10.2.0/trimmomatic-0.39-ili2pw5eux5c4zkvobobylopjwwu7phd/bin/trimmomatic-0.39.jar PE -phred33 raw/${sample}_1.fq.gz raw/${sample}_2.fq.gz viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz ILLUMINACLIP:raw/TruSeq3-PE.fa:2:30:10:2:True LEADING:3 TRAILING:3 MINLEN:36
 done
 
 cd ..
