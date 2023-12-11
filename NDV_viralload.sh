@@ -10,6 +10,7 @@ source /apps/profiles/modules_dmc.sh.dyn
 module load samtools/1.13
 # module load picard/1.79
 module load gatk/4.4.0.0
+module load bwa/0.7.12
 
 mkdir ref_index
 cd ref_index
