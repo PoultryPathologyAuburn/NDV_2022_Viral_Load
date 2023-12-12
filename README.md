@@ -1,5 +1,5 @@
 # NDV_2022_Viral_Load
-script for indexing, fastqc, trimming, alignment: <a href="NDV_viralload.sh">NDV_viralload.sh</a>
+script for indexing, fastqc, trimming, alignment: <a href="NDV_viralload.sh">NDV_viralload.sh</a> <br>
 script for stats: <a href="NDV_stats.sh">NDV_stats.sh</a>
 <details>
   <ul>
