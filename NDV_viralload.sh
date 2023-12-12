@@ -58,11 +58,11 @@ mkdir viral_PE_alignedASM28
 for sample in "${sample_list[@]}"; do
 	echo "CURRENT FILE: $sample"
  	# for paired 
-        bwa mem -t 4 ncbi-references/AF077761.1 viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz | samtools sort -o viral_PE_alignedAF/${sample}_PE.sorted.bam
-	bwa mem -t 4 ncbi-references/ASM478661.1 viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz | samtools sort -o viral_PE_alignedASM47/${sample}_PE.sorted.bam
-        bwa mem -t 4 ncbi-references/ASM283408.1 viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz | samtools sort -o viral_PE_alignedASM28/${sample}_PE.sorted.bam
+        bwa mem -t 4 ncbi-references/AF077761.1.fasta viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz | samtools sort -o viral_PE_alignedAF/${sample}_PE.sorted.bam
+	bwa mem -t 4 ncbi-references/ASM478661.1.fasta viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz | samtools sort -o viral_PE_alignedASM47/${sample}_PE.sorted.bam
+        bwa mem -t 4 ncbi-references/ASM283408.1.fasta viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz | samtools sort -o viral_PE_alignedASM28/${sample}_PE.sorted.bam
 	# for unpaired
-        #bwa mem -t 4 ncbi-references/AF077761.1 viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz | samtools sort -o viral_SE_alignedAF/${sample}_SE.sorted.bam
-	#bwa mem -t 4 ncbi-references/ASM478661.1 viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz | samtools sort -o viral_SE_alignedASM47/${sample}_SE.sorted.bam
-        #bwa mem -t 4 ncbi-references/ASM283408.1 viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz | samtools sort -o viral_SE_alignedASM28/${sample}_SE.sorted.bam
+        #bwa mem -t 4 ncbi-references/AF077761.1.fasta viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz | samtools sort -o viral_SE_alignedAF/${sample}_SE.sorted.bam
+	#bwa mem -t 4 ncbi-references/ASM478661.1.fasta viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz | samtools sort -o viral_SE_alignedASM47/${sample}_SE.sorted.bam
+        #bwa mem -t 4 ncbi-references/ASM283408.1.fasta viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz | samtools sort -o viral_SE_alignedASM28/${sample}_SE.sorted.bam
 done
