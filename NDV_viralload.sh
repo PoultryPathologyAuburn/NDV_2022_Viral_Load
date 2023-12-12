@@ -40,7 +40,7 @@ for sample in "${sample_list[@]}"; do
   	fastqc -o viral_fastqc1 raw/${sample}_1.fq.gz
    	fastqc -o viral_fastqc1 raw/${sample}_2.fq.gz
     	# run trimmomatic
-        java -jar /mnt/beegfs/apps/dmc/apps/spack_0.16.0/spack/opt/spack/linux-centos7-ivybridge/gcc-10.2.0/trimmomatic-0.39-ili2pw5eux5c4zkvobobylopjwwu7phd/bin/trimmomatic-0.39.jar PE -phred33 raw/${sample}_1.fq.gz raw/${sample}_2.fq.gz viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:True LEADING:3 TRAILING:3 MINLEN:36
+        java -jar /apps/x86-64/apps/spack_0.19.1/spack/opt/spack/linux-rocky8-zen3/gcc-11.3.0/trimmomatic-0.39-iu723m2xenra563gozbob6ansjnxmnfp/bin/trimmomatic-0.39.jar PE -phred33 raw/${sample}_1.fq.gz raw/${sample}_2.fq.gz viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/f_unpaired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz viral_trimmomatic/r_unpaired_${sample}.fq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:True LEADING:3 TRAILING:3 MINLEN:36
 	# check paired trimmed files with fastqc
  	fastqc -o viral_fastqc2 viral_trimmomatic/f_paired_${sample}.fq.gz
    	fastqc -o viral_fastqc2 viral_trimmomatic/r_paired_${sample}.fq.gz
