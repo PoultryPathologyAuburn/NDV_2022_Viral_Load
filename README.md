@@ -18,24 +18,32 @@ script for stats: <a href="NDV_stat.sh">NDV_stat.sh</a>
     <li>NCBI reference genomes: AF077761.1.fna (LaSota 1999), ASM283408.1.fna (Chinese ducks 2018), ASM478661.1.fna (Ireland chickens 2023)</li></ul>
 
 ## 2. Quality check with FastQC
+<ul>
+    <li>output: viral_fastqc1</li> </ul>
   
 ## 3. Trimming with Trimmomatic
+<ul>
+    <li>output: viral_trimmomatic</li> </ul>
 
 ## 4. Quality check with FastQC
+<ul>
+    <li>output: viral_fastqc2 (not done!)</li> </ul>
   
 ## 5. Alignment against all three references and counting hits: 
 <ul>
     <li>bwa mem</li>
     <li>samtools sort</li>
     <li>samtools view</li>
-    <li>htseq-count</li></ul>
+    <li>htseq-count</li>
+    <li>output _sorted.bam: folders named after the references</li></ul>
     
 ## 6. Statistics: 
 <ul>
     <li>samtools flagstat</li>
     <li>samtools depth</li>
     <li>HTSeq (viral load)</li>
-    <li>rpm: viral load/total reads</li></ul>
+    <li>rpm: viral load/total reads</li>
+    <li>output: references_results</li></ul>
 
 ## group permission for shared folders:
 <kbd>chmod -R g+rwx your_folder</kbd>
