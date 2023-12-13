@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# mapping reads against references
+# convert, sort, index
+# count hits
+
 # load modules
 source /apps/profiles/modules_asax.sh.dyn
 module load bwa/0.7.12
@@ -14,18 +18,16 @@ for ref in "${ref_list[@]}"; do
   mkdir ${ref}
   for sample in "${sample_list[@]}"; do
     echo "CURRENT ITEM $ref/$sample"
+    # map
     bwa mem -t 4 ncbi-references/${ref}.fasta viral_trimmomatic/f_paired_${sample}.fq.gz viral_trimmomatic/r_paired_${sample}.fq.gz > ${ref}/${sample}.sam
+    # convert sam to bam, sort, index
     samtools view -S -b ${ref}/${sample}.sam | samtools sort -o ${ref}/${sample}_sorted.bam - && samtools index ${ref}/${sample}_sorted.bam
+    # samtools count
     samtools_counts=$(samtools view -c -F 4 ${ref}/${sample}_sorted.bam)
     # python -m HTSeq.scripts.count
+    # htseq_counts
     htseq_counts=$(htseq-count -f bam -r pos -s no -i gene_id ${ref}/${sample}_sorted.bam ncbi-references/${ref}.gtf)
     echo "${ref}/${sample} $samtools_counts $htseq_counts" >> ${ref}/${ref}_counts.txt
   done
 done   
-
-#samtools view -S -b LaSota.sam > LaSota.bam
-#samtools sort LaSota.bam -o LaSota_sorted.bam
-#samtools index LaSota_sorted.bam
-#samtools view -c -F 4 LaSota_sorted.bam
-#htseq-count -f bam -r pos -s no -i gene_id sorted_aligned_reads.bam reference_annotation.gtf
 
