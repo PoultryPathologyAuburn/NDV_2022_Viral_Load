@@ -47,4 +47,4 @@ script for stats: <a href="NDV_stat.sh">NDV_stat.sh</a>
     <li>output: references_results</li></ul>
 
 ## group permission for shared folders:
-<kbd>chmod -R g+rwx your_folder</kbd>
+<kbd>chmod -R +777 foldername</kbd>
