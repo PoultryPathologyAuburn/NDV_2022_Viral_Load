@@ -1,6 +1,7 @@
 #!/bin/bash
 source /apps/profiles/modules_asax.sh.dyn
 module load samtools/1.18
+module load htseq/2.4.0
 
 # stats
 # 
@@ -10,16 +11,15 @@ sample_list=("LaSota" "hg12c3" "hg12c4" "hg12c5" "hg12v2" "hg12v4" "hg12v5" "hg2
 ref_list=("AF077761.1" "ASM283408.1" "ASM478661.1")
 
 for ref in "${ref_list[@]}"; do
+	mkdir ${ref}_results
 	for sample in "${sample_list[@]}"; do
-		echo "CURRENT DIR: $refdir\nCURRENT FILE: $sample"
-  		mkdir ${ref}_results
-    		results="../${ref}_results"
-		samtools flagstat ${refdir}/${sample}_sorted.bam > $results/${sample}_flagstat.txt
- 		samtools depth ${refdir}/${sample}_sorted.bam > $results/${sample}_depth.txt
-		python -m HTSeq.scripts.count --stranded=no -r name -f bam ${refdir}/${sample}_sorted.bam ncbi-references/${refdir}_genomic.gtf > $results/${sample}_counts.txt
-		total_reads=$(awk 'NR==1{print $1}' $results/${sample}_flagstat.txt)
-		viral_load=$(awk '{sum+=$2} END {print sum}' $results/${sample}_viral_load.txt)
+		echo "CURRENT REF: $ref\nCURRENT FILE: $sample"
+		samtools flagstat ${ref}/${sample}_sorted.bam > ${ref}_results/${sample}_flagstat.txt
+ 		samtools depth ${ref}/${sample}_sorted.bam > ${ref}_results/${sample}_depth.txt
+		python -m HTSeq.scripts.count --stranded=no -r name -f bam ${ref}/${sample}_sorted.bam ncbi-references/${ref}_genomic.gtf > ${ref}_results/${sample}_counts.txt
+		total_reads=$(awk 'NR==1{print $1}' ${ref}_results/${sample}_flagstat.txt)
+		viral_load=$(awk '{sum+=$2} END {print sum}' ${ref}_results/${sample}_counts.txt)
 		rpm=$(echo "scale=2; $viral_load / $total_reads * 1000000" | bc)
-		echo "${sample}: $total_reads totalreads $viral_load viralload ${rpm} RPM" >> stats.txt
+		echo "${sample}: $total_reads totalreads $viral_load viralload ${rpm} RPM" >> ${ref}_results/${ref}_stats.txt
 	done
 done
