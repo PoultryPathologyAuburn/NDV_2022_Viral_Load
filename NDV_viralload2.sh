@@ -2,6 +2,7 @@
 
 # load modules
 source /apps/profiles/modules_asax.sh.dyn
+module load bwa/0.7.12
 module load samtools/1.18
 module load htseq/2.0.4
 
