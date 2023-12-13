@@ -1,8 +1,10 @@
 #!/bin/bash
 
+# all the preps:
 # indexing references 
-# fastqc
+# fastqc 1
 # trimmomatic
+# fastqc 2
 
 #load module
 source /apps/profiles/modules_asax.sh.dyn
@@ -12,8 +14,12 @@ module load gatk/4.4.0.0
 module load bwa/0.7.17
 module load fastqc/0.10.1
 
+# download ref-genome.fasta and .gtf from NCBI virus into folder ncbi-references
+# .gtf for AF077761 is not available!
+
 cd ncbi-references
 
+# index ref-genomes:
 ref_list=("ASM478661.1" "AF077761.1" "ASM283408.1")
 
 for ref in "${ref_list[@]}"; do
@@ -26,6 +32,7 @@ done
 
 cd ..
 
+# fastqc raw, trimmomatic, fastqc trimmomatic:
 # make sample list
 sample_list=("LaSota" "hg12c3" "hg12c4" "hg12c5" "hg12v2" "hg12v4" "hg12v5" "hg24c2" "hg24c4" "hg24c5" "hg24v1" "hg24v4" "hg24v6" "tr12c1" "tr12c4" "tr12c5" "tr12v2" "tr12v4" "tr24v4" "tr24v7")
 
