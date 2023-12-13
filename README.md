@@ -1,6 +1,7 @@
 # NDV_2022_Viral_Load
-script for indexing, fastqc, trimming, alignment: <a href="NDV_viralload.sh">NDV_viralload.sh</a> <br>
-script for stats: <a href="NDV_stats.sh">NDV_stats.sh</a>
+script for indexing, fastqc, trimming: <a href="NDV_prep.sh">NDV_prep.sh</a> <br>
+script for mapping against reference genome: <a href="NDV_map.sh">NDV_map.sh</a> <br>
+script for stats: <a href="NDV_stat.sh">NDV_stat.sh</a>
 <details>
   <ul>
     <li>SPF chickens, inoculated with NDV, samples taken after 12, 24, 48 hours, from Harderian gland, trachea, spleen, cecal tonsils</li>
