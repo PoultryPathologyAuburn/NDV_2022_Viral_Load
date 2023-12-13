@@ -4,7 +4,7 @@ module load samtools/1.18
 module load htseq/2.4.0
 
 # stats
-# 
+# counts, total reads, viral load, RPM
 
 # make sample list
 sample_list=("LaSota" "hg12c3" "hg12c4" "hg12c5" "hg12v2" "hg12v4" "hg12v5" "hg24c2" "hg24c4" "hg24c5" "hg24v1" "hg24v4" "hg24v6" "tr12c1" "tr12c4" "tr12c5" "tr12v2" "tr12v4" "tr24v4" "tr24v7")
