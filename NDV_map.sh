@@ -24,7 +24,7 @@ for ref in "${ref_list[@]}"; do
     samtools view -S -b ${ref}/${sample}.sam | samtools sort -o ${ref}/${sample}_sorted.bam - && samtools index ${ref}/${sample}_sorted.bam
     # samtools count
     samtools_counts=$(samtools view -c -F 4 ${ref}/${sample}_sorted.bam)
-    # python -m HTSeq.scripts.count
+    # in case "htseq_counts" does not work, sub it with "python -m HTSeq.scripts.count"
     # htseq_counts
     htseq_counts=$(htseq-count -f bam -r pos -s no -i gene_id ${ref}/${sample}_sorted.bam ncbi-references/${ref}.gtf)
     echo "${ref}/${sample} $samtools_counts $htseq_counts" >> ${ref}/${ref}_counts.txt
