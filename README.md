@@ -36,3 +36,6 @@ script for stats: <a href="NDV_stat.sh">NDV_stat.sh</a>
     <li>samtools depth</li>
     <li>HTSeq (viral load)</li>
     <li>rpm: viral load/total reads</li></ul>
+
+## group permission for shared folders:
+<kbd>chmod -R g+rwx your_folder</kbd>
