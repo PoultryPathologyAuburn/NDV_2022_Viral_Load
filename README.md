@@ -35,7 +35,8 @@ script for stats: <a href="NDV_stat.sh">NDV_stat.sh</a>
     <li>samtools sort</li>
     <li>samtools view</li>
     <li>htseq-count</li>
-    <li>output _sorted.bam: folders named after the references</li></ul>
+  <li>for all three references, for trimmed sequences, for raw sequences</li>
+    <li>output _sorted.bam: for trimmed the output folders have the reference-name, for raw reference_raw</li></ul>
     
 ## 6. Statistics: 
 <ul>
