@@ -23,10 +23,12 @@ script for stats: <a href="NDV_stat.sh">NDV_stat.sh</a>
 
 ## 4. Quality check with FastQC
   
-## 5. Alignment against all three references: 
+## 5. Alignment against all three references and counting hits: 
 <ul>
     <li>bwa mem</li>
-    <li>samtools sort</li></ul>
+    <li>samtools sort</li>
+    <li>samtools view</li>
+    <li>htseq-count</li></ul>
     
 ## 6. Statistics: 
 <ul>
